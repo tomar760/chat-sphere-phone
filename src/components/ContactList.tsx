@@ -15,6 +15,9 @@ export interface Contact {
   unreadCount?: number;
   isOnline?: boolean;
   lastSeen?: string;
+  hasStory?: boolean;
+  storyViewed?: boolean;
+  isTyping?: boolean;
 }
 
 interface ContactListProps {
@@ -31,6 +34,8 @@ const mockContacts: Contact[] = [
     lastMessageTime: "2:34 PM",
     unreadCount: 2,
     isOnline: true,
+    hasStory: true,
+    storyViewed: false,
   },
   {
     id: "2",
@@ -40,6 +45,9 @@ const mockContacts: Contact[] = [
     lastMessageTime: "1:15 PM",
     isOnline: false,
     lastSeen: "Last seen 30 minutes ago",
+    hasStory: true,
+    storyViewed: true,
+    isTyping: false,
   },
   {
     id: "3",
@@ -49,6 +57,7 @@ const mockContacts: Contact[] = [
     lastMessageTime: "12:45 PM",
     unreadCount: 1,
     isOnline: true,
+    isTyping: true,
   },
   {
     id: "4",
@@ -58,6 +67,7 @@ const mockContacts: Contact[] = [
     lastMessageTime: "11:30 AM",
     isOnline: false,
     lastSeen: "Last seen 2 hours ago",
+    hasStory: false,
   },
   {
     id: "5",
@@ -66,6 +76,8 @@ const mockContacts: Contact[] = [
     lastMessage: "Check out this cool article!",
     lastMessageTime: "Yesterday",
     isOnline: true,
+    hasStory: true,
+    storyViewed: false,
   },
 ];
 
@@ -112,7 +124,11 @@ export const ContactList = ({ onContactSelect, selectedContactId }: ContactListP
               }`}
             >
               <div className="relative">
-                <Avatar className="w-12 h-12">
+                <Avatar className={`w-12 h-12 ${
+                  contact.hasStory 
+                    ? `ring-2 ${contact.storyViewed ? 'ring-gray-400' : 'ring-whatsapp-green'} ring-offset-2 ring-offset-background` 
+                    : ''
+                }`}>
                   <AvatarImage src={contact.avatar} />
                   <AvatarFallback className="bg-whatsapp-green text-white">
                     {contact.name.split(' ').map(n => n[0]).join('')}
@@ -132,7 +148,11 @@ export const ContactList = ({ onContactSelect, selectedContactId }: ContactListP
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground truncate">
-                    {contact.lastMessage || contact.lastSeen || "No messages yet"}
+                    {contact.isTyping ? (
+                      <span className="italic text-whatsapp-green">typing...</span>
+                    ) : (
+                      contact.lastMessage || contact.lastSeen || "No messages yet"
+                    )}
                   </p>
                   {contact.unreadCount && contact.unreadCount > 0 && (
                     <Badge className="bg-whatsapp-green text-white ml-2 min-w-[20px] h-5 rounded-full text-xs">
